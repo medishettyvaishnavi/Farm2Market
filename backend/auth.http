@@ -1,0 +1,25 @@
+### SIGNUP - FARMER
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Ramesh Kumar",
+  "mobile": "9866543211",
+  "password": "Test@123",
+  "role": "FARMER",
+  "location": "Khammam Rural, Telangana",
+  "landSize": 5,
+  "soilType": "Black Cotton Soil",
+  "irrigationSource": "Borewell",
+  "preferredLanguage": "te"
+}
+
+### LOGIN - FARMER
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "mobile": "9866543211",
+  "password": "Test@123",
+  "role": "FARMER"
+}

@@ -2,49 +2,52 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+    name: { 
+      type: String, 
+      required: true, 
+      trim: true 
     },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
+    mobile: { 
+      type: String, 
+      required: true, 
+      unique: true, 
+      trim: true 
     },
-
-    password: {
-      type: String,
-      required: true,
-      minlength: 6,
+    passwordHash: { 
+      type: String, 
+      required: true 
     },
-
     role: {
       type: String,
       enum: ["FARMER", "BUYER", "NGO"],
       required: true,
     },
-
-    phone: {
-      type: String,
-      trim: true,
+    location: { 
+      type: String, 
+      trim: true 
     },
-
-    location: {
-      type: String,
-      trim: true,
+    landSize: { 
+      type: Number 
     },
-
+    soilType: { 
+      type: String, 
+      trim: true 
+    },
+    irrigationSource: { 
+      type: String, 
+      trim: true 
+    },
+    preferredLanguage: { 
+      type: String, 
+      default: "en" 
+    },
     isVerified: {
       type: Boolean,
       default: false,
     },
   },
-  {
-    timestamps: true,
+  { 
+    timestamps: true 
   }
 );
 

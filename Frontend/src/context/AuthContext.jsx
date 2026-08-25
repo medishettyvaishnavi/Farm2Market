@@ -21,22 +21,30 @@ export const AuthProvider = ({ children }) => {
     }
   }, [farmer]);
 
-  const login = async ({ mobile, role = "farmer", password }) => {
+  const login = async ({ mobile, password, role }) => {
     try {
-      const res = await api.post("/auth/login", { mobile, password });
+      const res = await api.post("/auth/login", { 
+        mobile, 
+        password,
+        role: role.toUpperCase(),
+      });
       const { token, user } = res.data;
       
       localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
 
       const loggedUser = {
         ...initialFarmerProfile,
-        id: user.id,
+        id: user.id || user._id,
         name: user.name,
-        village: user.location,
-        mobile: user.phone,
+        mobile: user.mobile,
         role: user.role.toLowerCase(),
-        isVerified: user.isVerified,
+        village: user.location || initialFarmerProfile.village,
+        isVerified: user.isVerified || false,
         verificationStatus: user.isVerified ? "verified" : "pending",
+        landSize: user.landSize,
+        soilType: user.soilType,
+        irrigationSource: user.irrigationSource,
       };
 
       setFarmer(loggedUser);
@@ -63,21 +71,45 @@ export const AuthProvider = ({ children }) => {
 
   const registerFarmer = async (formData) => {
     try {
-      const email = `${formData.mobile}@farm2market.in`;
-      const regData = {
+      const response = await api.post("/auth/signup", {
         name: formData.name,
-        email,
-        password: formData.password || "123456",
-        role: "FARMER",
-        phone: formData.mobile,
-        location: formData.location || formData.village,
-      };
-      await api.post("/auth/register", regData);
-      return await login({
         mobile: formData.mobile,
         password: formData.password || "123456",
-        role: "farmer",
+        role: "FARMER",
+        location: formData.location || formData.village,
+        landSize: Number(formData.landSize) || 0,
+        soilType: formData.soilType || "",
+        irrigationSource: formData.irrigationSource || "",
+        preferredLanguage: formData.preferredLanguage || "en",
       });
+
+      const { token, user } = response.data;
+      localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
+
+      const newFarmer = {
+        ...initialFarmerProfile,
+        id: user.id || user._id,
+        name: user.name,
+        mobile: user.mobile,
+        village: user.location,
+        role: user.role.toLowerCase(),
+        language: user.preferredLanguage,
+        landSize: user.landSize,
+        soilType: user.soilType,
+        irrigationSource: user.irrigationSource,
+        verificationStatus: "pending",
+        isVerified: false,
+      };
+
+      setFarmer(newFarmer);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, newFarmer);
+
+      return {
+        success: true,
+        user,
+      };
     } catch (error) {
       console.warn("API registration failed, using local fallback:", error);
       
@@ -100,24 +132,34 @@ export const AuthProvider = ({ children }) => {
 
   const registerBuyer = async (formData) => {
     try {
-      const email = `${formData.mobile}@farm2market.in`;
-      const regData = {
+      const response = await api.post("/auth/signup", {
         name: formData.name,
-        email,
-        password: formData.password,
-        role: "BUYER",
-        phone: formData.mobile,
-        location: formData.location,
-      };
-      await api.post("/auth/register", regData);
-      return await login({
         mobile: formData.mobile,
         password: formData.password,
-        role: "buyer",
+        role: "BUYER",
+        location: formData.location,
       });
+
+      const { token, user } = response.data;
+      localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
+      
+      const newBuyer = {
+        ...initialFarmerProfile,
+        id: user.id || user._id,
+        name: user.name,
+        mobile: user.mobile,
+        village: user.location,
+        role: "buyer",
+        isVerified: true,
+      };
+
+      setFarmer(newBuyer);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, newBuyer);
+      return { success: true, user };
     } catch (error) {
-      console.error("Buyer API registration failed:", error);
-      // fallback
+      console.error("Buyer API registration failed, using fallback:", error);
       return await login({
         mobile: formData.mobile,
         password: formData.password,
@@ -152,6 +194,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     localStorage.removeItem(STORAGE_KEYS.PROFILE);
     localStorage.removeItem("farm2market_token");
+    localStorage.removeItem("token");
   };
 
   return (

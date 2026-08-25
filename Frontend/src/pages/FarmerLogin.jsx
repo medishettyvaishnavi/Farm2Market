@@ -36,11 +36,16 @@ function FarmerLogin() {
   });
 
   const onSubmit = async (data) => {
-    const res = await login({
+    const result = await login({
       mobile: data.mobile,
-      role: selectedRole,
       password: data.password,
+      role: selectedRole.toUpperCase(),
     });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
 
     if (selectedRole === "farmer") {
       navigate("/farmer/dashboard");
