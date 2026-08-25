@@ -35,6 +35,13 @@ function Home() {
                     Register
                 </button>
 
+                <button
+                    className="btn btn-dark ms-2"
+                    onClick={() => navigate("/buyer/marketplace")}
+                >
+                    Buyer Marketplace
+                </button>
+
             </div>
 
         </div>
