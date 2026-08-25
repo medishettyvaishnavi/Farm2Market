@@ -52,9 +52,17 @@ export const AuthProvider = ({ children }) => {
       saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
       return { success: true, role: loggedUser.role };
     } catch (error) {
-      console.warn("API login failed, using local fallback:", error);
+      console.warn("API login failed:", error);
       
-      // Mock Fallback
+      // If server responded with a status, it's a validation error, not a connection drop
+      if (error.response) {
+        return {
+          success: false,
+          message: error.response.data?.message || "Invalid mobile number or password",
+        };
+      }
+      
+      // Network offline fallback
       const loggedUser = {
         ...initialFarmerProfile,
         name: mobile || initialFarmerProfile.name,
