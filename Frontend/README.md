@@ -1,4 +1,14 @@
-# React + Vite
+# Farm2Market Buyer Frontend
+
+The existing React/Vite app contains the Farm2Market home and farmer pages plus the Buyer + Marketplace workspace.
+
+```powershell
+cd Frontend
+npm install
+npm run dev
+```
+
+Set `VITE_API_URL` when the API is not running at `http://localhost:4000/api`.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
