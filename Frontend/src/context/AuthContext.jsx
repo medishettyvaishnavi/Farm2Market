@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { initialFarmerProfile } from "../data/mockFarmerData";
 import { loadStoredData, saveStoredData, STORAGE_KEYS } from "../services/storageService";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
@@ -20,37 +21,106 @@ export const AuthProvider = ({ children }) => {
     }
   }, [farmer]);
 
-  const login = ({ name, location, mobile, role = "farmer", password }) => {
-    // In real backend, axios.post('/api/auth/login')
-    const loggedUser = {
-      ...initialFarmerProfile,
-      name: name || initialFarmerProfile.name,
-      village: location || initialFarmerProfile.village,
-      mobile: mobile || initialFarmerProfile.mobile,
-      role: role || "farmer",
-    };
-    setFarmer(loggedUser);
-    setIsAuthenticated(true);
-    saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
-    return { success: true, role: loggedUser.role };
+  const login = async ({ mobile, password, role }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        {
+          mobile,
+          password,
+          role,
+        }
+      );
+
+      const { token, user } = response.data;
+
+      localStorage.setItem("token", token);
+
+      const loggedUser = {
+        ...initialFarmerProfile,
+        id: user.id,
+        name: user.name,
+        mobile: user.mobile,
+        role: user.role.toLowerCase(),
+        village: user.location || initialFarmerProfile.village,
+      };
+
+      setFarmer(loggedUser);
+      setIsAuthenticated(true);
+
+      saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
+
+      return {
+        success: true,
+        role: loggedUser.role,
+      };
+    } catch (error) {
+      console.error("Login failed:", error);
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Invalid mobile number or password",
+      };
+    }
   };
 
-  const registerFarmer = (formData) => {
+const registerFarmer = async (formData) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/auth/signup",
+      {
+        name: formData.name,
+        mobile: formData.mobile,
+        password: formData.password,
+        role: formData.role,
+
+        location: formData.location,
+        landSize: formData.landSize,
+        soilType: formData.soilType,
+        irrigationSource: formData.irrigationSource,
+        preferredLanguage: formData.preferredLanguage,
+      }
+    );
+
+    const { token, user } = response.data;
+
+    localStorage.setItem("token", token);
+
     const newFarmer = {
       ...initialFarmerProfile,
-      id: "farmer_" + Date.now(),
-      name: formData.name,
-      mobile: formData.mobile,
-      village: formData.location || formData.village,
-      language: formData.language || "te",
+      id: user.id,
+      name: user.name,
+      mobile: user.mobile,
+      village: user.location,
+      role: user.role.toLowerCase(),
+      language: user.preferredLanguage,
+      landSize: user.landSize,
+      soilType: user.soilType,
+      irrigationSource: user.irrigationSource,
       verificationStatus: "pending",
       isVerified: false,
     };
+
     setFarmer(newFarmer);
     setIsAuthenticated(true);
+
     saveStoredData(STORAGE_KEYS.PROFILE, newFarmer);
-    return { success: true };
-  };
+
+    return {
+      success: true,
+      user,
+    };
+  } catch (error) {
+    console.error("Registration failed:", error);
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message || "Registration failed",
+    };
+  }
+};
 
   const updateProfile = (updatedFields) => {
     setFarmer((prev) => {
