@@ -1,7 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import { getOfflineQueue, clearOfflineQueue } from "../services/storageService";
 
-const NetworkContext = createContext();
+export const NetworkContext = createContext();
 
 export const NetworkProvider = ({ children }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -61,3 +62,5 @@ export const useNetwork = () => {
   }
   return context;
 };
+
+export default NetworkProvider;

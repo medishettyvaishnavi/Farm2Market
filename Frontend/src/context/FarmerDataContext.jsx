@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import {
   initialCrops,
@@ -12,7 +13,7 @@ import {
   STORAGE_KEYS,
 } from "../services/storageService";
 
-const FarmerDataContext = createContext();
+export const FarmerDataContext = createContext();
 
 export const FarmerDataProvider = ({ children }) => {
   const [crops, setCrops] = useState(() => {
@@ -81,17 +82,14 @@ export const FarmerDataProvider = ({ children }) => {
     const offer = offers.find((o) => o.id === offerId);
     if (!offer) return;
 
-    // Update offer status
     setOffers((prev) =>
       prev.map((o) => (o.id === offerId ? { ...o, status: "accepted" } : o))
     );
 
-    // Update crop status
     if (offer.cropId) {
       updateCrop(offer.cropId, { status: "sold" });
     }
 
-    // Create a new order
     const newOrder = {
       id: "ORD-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000),
       cropName: offer.cropName,
@@ -160,3 +158,5 @@ export const useFarmerData = () => {
   }
   return context;
 };
+
+export default FarmerDataProvider;

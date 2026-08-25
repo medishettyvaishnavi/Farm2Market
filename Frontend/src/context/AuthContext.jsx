@@ -1,8 +1,9 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import { initialFarmerProfile } from "../data/mockFarmerData";
 import { loadStoredData, saveStoredData, STORAGE_KEYS } from "../services/storageService";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [farmer, setFarmer] = useState(() => {
@@ -102,3 +103,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthProvider;

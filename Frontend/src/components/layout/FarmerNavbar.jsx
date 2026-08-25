@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
@@ -14,6 +15,7 @@ import {
   FaCheckCircle,
   FaWifi,
   FaSignOutAlt,
+  FaShieldAlt,
 } from "react-icons/fa";
 
 export default function FarmerNavbar() {
@@ -22,6 +24,19 @@ export default function FarmerNavbar() {
   const { isOnline, toggleSimulatedOffline } = useNetwork();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const navLinks = [
     { path: "/farmer/dashboard", label: t("dashboard"), icon: FaLeaf },
@@ -38,7 +53,7 @@ export default function FarmerNavbar() {
         {/* Brand */}
         <Link
           to="/farmer/dashboard"
-          className="navbar-brand fw-bold d-flex align-items-center gap-2 fs-4 text-white"
+          className="navbar-brand fw-bold d-flex align-items-center gap-2 fs-4 text-white text-decoration-none"
         >
           <span className="bg-white text-success rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm">
             🌾
@@ -86,7 +101,6 @@ export default function FarmerNavbar() {
           <VoiceButton
             mode="listen"
             onTranscript={(text) => {
-              // If user speaks crop name or intent, navigate or search
               navigate(`/farmer/crops?search=${encodeURIComponent(text)}`);
             }}
           />
@@ -109,14 +123,12 @@ export default function FarmerNavbar() {
           </button>
 
           {/* Farmer Profile Menu */}
-          <div className="dropdown">
+          <div className="position-relative" ref={profileMenuRef}>
             <button
-              className="btn btn-light btn-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm fw-bold dropdown-toggle text-dark"
+              className="btn btn-light btn-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm fw-bold text-dark"
               type="button"
-              id="profileDropdown"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              onClick={() => navigate("/farmer/profile")}
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              aria-label="Profile Menu"
             >
               <FaUserCircle className="text-success fs-5" />
               <span className="d-none d-md-inline text-truncate" style={{ maxWidth: "120px" }}>
@@ -126,30 +138,53 @@ export default function FarmerNavbar() {
                 <FaCheckCircle className="text-primary small" title="Verified Farmer" />
               )}
             </button>
-            <ul className="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="profileDropdown">
-              <li>
-                <Link className="dropdown-item py-2 fw-semibold" to="/farmer/profile">
-                  👤 {t("profile")}
+
+            {showProfileMenu && (
+              <div
+                className="position-absolute end-0 mt-2 card shadow-lg p-2 border-0"
+                style={{
+                  zIndex: 1050,
+                  width: "210px",
+                  borderRadius: "14px",
+                  background: "#ffffff",
+                }}
+              >
+                <div className="px-3 py-2 border-bottom mb-1">
+                  <div className="fw-bold text-dark text-truncate">{farmer?.name || "Farmer"}</div>
+                  <div className="small text-muted">{farmer?.village || "Telangana"}</div>
+                </div>
+
+                <Link
+                  className="dropdown-item py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 text-dark"
+                  to="/farmer/profile"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  <FaUserCircle className="text-success" /> {t("profile")}
                 </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item py-2 fw-semibold" to="/farmer/verification">
-                  🛡️ {t("verification")}
+
+                <Link
+                  className="dropdown-item py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 text-dark"
+                  to="/farmer/verification"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  <FaShieldAlt className="text-primary" /> {t("verification")}
                 </Link>
-              </li>
-              <li><hr className="dropdown-divider" /></li>
-              <li>
+
+                <hr className="my-1" />
+
                 <button
-                  className="dropdown-item text-danger py-2 fw-semibold d-flex align-items-center gap-2"
+                  type="button"
+                  className="dropdown-item text-danger py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 border-0 bg-transparent w-100 text-start"
                   onClick={() => {
+                    setShowProfileMenu(false);
                     logout();
                     navigate("/farmer/login");
                   }}
                 >
                   <FaSignOutAlt /> {t("logout")}
                 </button>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

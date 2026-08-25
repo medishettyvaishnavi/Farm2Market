@@ -1,11 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import { translations } from "../data/translations";
 
-const LanguageContext = createContext();
+export const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("farm2market_lang") || "te"; // Default to Telugu as primary local language, or saved
+    return localStorage.getItem("farm2market_lang") || "te"; // Default to Telugu
   });
 
   useEffect(() => {
@@ -38,3 +39,5 @@ export const useLanguage = () => {
   }
   return context;
 };
+
+export default LanguageProvider;
