@@ -91,7 +91,7 @@ export default function AddCrop() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak="Fill in your crop name, quantity in quintals, expected price, and upload crop photos to list for nearby buyers."
+            textToSpeak={t("addNewCropSubtitle")}
           />
         </div>
 

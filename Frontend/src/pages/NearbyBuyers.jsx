@@ -67,7 +67,7 @@ export default function NearbyBuyers() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak="Explore verified buyers near you. Filter by distance, compare offered prices, and send direct selling quotes."
+            textToSpeak={t("buyerDiscovery")}
           />
         </div>
 

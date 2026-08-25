@@ -47,7 +47,7 @@ function FarmerLogin() {
     if (selectedRole === "farmer") {
       navigate("/farmer/dashboard");
     } else {
-      navigate("/farmer/buyers");
+      navigate("/buyer/dashboard");
     }
   };
 
@@ -79,11 +79,11 @@ function FarmerLogin() {
           <label className="form-label fw-bold small text-muted text-uppercase mb-2 d-block">
             {t("selectRole")}:
           </label>
-          <div className="row g-2">
+          <div className="row g-2 align-items-stretch">
             <div className="col-6">
               <button
                 type="button"
-                className={`btn w-100 p-3 rounded-3 text-start border d-flex align-items-center gap-2 ${
+                className={`btn w-100 h-100 p-3 rounded-3 text-start border d-flex align-items-start gap-2 ${
                   selectedRole === "farmer"
                     ? "btn-success shadow-sm"
                     : "btn-light bg-white"
@@ -108,7 +108,7 @@ function FarmerLogin() {
             <div className="col-6">
               <button
                 type="button"
-                className={`btn w-100 p-3 rounded-3 text-start border d-flex align-items-center gap-2 ${
+                className={`btn w-100 h-100 p-3 rounded-3 text-start border d-flex align-items-start gap-2 ${
                   selectedRole === "buyer"
                     ? "btn-success shadow-sm"
                     : "btn-light bg-white"

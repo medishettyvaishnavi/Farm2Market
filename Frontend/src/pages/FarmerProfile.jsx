@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import FarmerLayout from "../components/layout/FarmerLayout";
 import VoiceButton from "../components/common/VoiceButton";
+import { formatNumberForSpeech } from "../services/voiceService";
 import {
   FaUserCircle,
   FaTractor,
@@ -17,7 +18,7 @@ import { Link } from "react-router-dom";
 
 export default function FarmerProfile() {
   const { farmer, updateProfile } = useAuth();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: farmer?.name || "",
@@ -63,7 +64,7 @@ export default function FarmerProfile() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak={`Farmer Profile for ${farmer?.name}. Land size ${farmer?.landSize} acres in ${farmer?.village}. Status: ${farmer?.isVerified ? "Verified" : "Pending"}.`}
+            textToSpeak={`${t("profile")}: ${farmer?.name}. ${t("landSize")}: ${formatNumberForSpeech(farmer?.landSize, language)} ${farmer?.landUnit || "Acres"}, ${farmer?.village}. ${t("verificationStatus")}: ${t(farmer?.isVerified ? "verified" : "pending")}.`}
           />
         </div>
 

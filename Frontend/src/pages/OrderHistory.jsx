@@ -3,6 +3,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useFarmerData } from "../context/FarmerDataContext";
 import FarmerLayout from "../components/layout/FarmerLayout";
 import VoiceButton from "../components/common/VoiceButton";
+import { formatNumberForSpeech } from "../services/voiceService";
 import {
   FaHistory,
   FaCheckCircle,
@@ -15,7 +16,7 @@ import {
 } from "react-icons/fa";
 
 export default function OrderHistory() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { orders } = useFarmerData();
   const [selectedReceipt, setSelectedReceipt] = useState(null);
 
@@ -53,7 +54,7 @@ export default function OrderHistory() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak={`You have ${orders.length} orders recorded with total payments received of ₹${totalEarnings.toLocaleString()}.`}
+            textToSpeak={`${t("orderTracker")}: ${formatNumberForSpeech(orders.length, language)}. ${t("totalEarnings")}: ${formatNumberForSpeech(totalEarnings, language)}.`}
           />
         </div>
 

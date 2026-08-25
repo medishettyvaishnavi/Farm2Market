@@ -37,23 +37,23 @@ function Home() {
       <main className="container my-auto py-5 text-center">
         <div className="mx-auto" style={{ maxWidth: "750px" }}>
           <div className="badge bg-success-subtle text-success px-4 py-2 rounded-pill fw-bold mb-3 border border-success-subtle shadow-sm">
-            🌱 {t("tagline")} (రైతు మరియు కొనుగోలుదారుల ప్రత్యక్ష మార్కెట్)
+            🌱 {t("tagline")}
           </div>
 
           <h1 className="display-4 fw-bold text-dark mb-3">
-            Sell Crops Directly with <span className="text-success">Zero Middlemen</span>
+            {t("heroHeading")} <span className="text-success">{t("heroHeadingHighlight")}</span>
           </h1>
 
           <p className="lead text-muted mb-4">
-            Connect local farmers with verified grain millers, exporters, and wholesale buyers at real-time Mandi market rates with guaranteed secure payments.
+            {t("heroSubtitle")}
           </p>
 
           {/* Voice Summary Audio */}
           <div className="d-flex justify-content-center mb-4">
             <VoiceButton
               mode="speak"
-              textToSpeak="Welcome to Farm2Market. Choose whether you are a Farmer wanting to sell crops or a Buyer looking for fresh harvest."
-              label="Listen to Audio Guide (ఆడియో వినండి)"
+              textToSpeak={t("voiceIntro")}
+              label={t("audioGuideLabel")}
             />
           </div>
 
@@ -72,17 +72,17 @@ function Home() {
                   >
                     <FaTractor />
                   </div>
-                  <span className="badge bg-success">For Farmers</span>
+                  <span className="badge bg-success">{t("forFarmers")}</span>
                 </div>
-                <h4 className="fw-bold text-success mb-1">Farmer / Producer</h4>
+                <h4 className="fw-bold text-success mb-1">{t("farmerCardTitle")}</h4>
                 <p className="text-muted small mb-3">
-                  రైతు: పంటను అమ్మండి, ధరల వివరాలు చూడండి, సమీప కొనుగోలుదారులతో మాట్లాడండి.
+                  {t("farmerCardDesc")}
                 </p>
                 <button
                   type="button"
                   className="btn btn-success fw-bold rounded-pill w-100 py-2 d-flex align-items-center justify-content-center gap-2"
                 >
-                  Enter Farmer Portal <FaArrowRight />
+                  {t("enterFarmerPortal")} <FaArrowRight />
                 </button>
               </div>
             </div>
@@ -100,17 +100,17 @@ function Home() {
                   >
                     <FaStore />
                   </div>
-                  <span className="badge bg-primary">For Buyers</span>
+                  <span className="badge bg-primary">{t("forBuyers")}</span>
                 </div>
-                <h4 className="fw-bold text-primary mb-1">Buyer / Mill Owner</h4>
+                <h4 className="fw-bold text-primary mb-1">{t("buyerCardTitle")}</h4>
                 <p className="text-muted small mb-3">
-                  కొనుగోలుదారు: నేరుగా రైతుల వద్ద నుంచి నాణ్యమైన పంటను కొనుగోలు చేయండి.
+                  {t("buyerCardDesc")}
                 </p>
                 <button
                   type="button"
                   className="btn btn-primary fw-bold rounded-pill w-100 py-2 d-flex align-items-center justify-content-center gap-2"
                 >
-                  Enter Buyer Portal <FaArrowRight />
+                  {t("enterBuyerPortal")} <FaArrowRight />
                 </button>
               </div>
             </div>
@@ -121,9 +121,9 @@ function Home() {
             <div className="col-md-4">
               <div className="p-3 bg-white rounded-4 shadow-sm h-100">
                 <FaMicrophone className="text-success fs-2 mb-2" />
-                <h6 className="fw-bold mb-1">Voice First UI</h6>
+                <h6 className="fw-bold mb-1">{t("featureVoiceTitle")}</h6>
                 <p className="text-muted small mb-0">
-                  Speak in Telugu, Hindi or English to search & list crops.
+                  {t("featureVoiceDesc")}
                 </p>
               </div>
             </div>
@@ -131,9 +131,9 @@ function Home() {
             <div className="col-md-4">
               <div className="p-3 bg-white rounded-4 shadow-sm h-100">
                 <FaChartLine className="text-success fs-2 mb-2" />
-                <h6 className="fw-bold mb-1">Live Mandi Rates</h6>
+                <h6 className="fw-bold mb-1">{t("featureMandiTitle")}</h6>
                 <p className="text-muted small mb-0">
-                  Real-time market yard price intelligence & selling advisory.
+                  {t("featureMandiDesc")}
                 </p>
               </div>
             </div>
@@ -141,9 +141,9 @@ function Home() {
             <div className="col-md-4">
               <div className="p-3 bg-white rounded-4 shadow-sm h-100">
                 <FaMobileAlt className="text-success fs-2 mb-2" />
-                <h6 className="fw-bold mb-1">Works Offline</h6>
+                <h6 className="fw-bold mb-1">{t("featureOfflineTitle")}</h6>
                 <p className="text-muted small mb-0">
-                  Manage crops and offers even in remote low-network zones.
+                  {t("featureOfflineDesc")}
                 </p>
               </div>
             </div>
@@ -154,7 +154,7 @@ function Home() {
       {/* Footer */}
       <footer className="bg-white border-top py-3 text-center text-muted small">
         <div className="container">
-          🌾 Farm2Market © 2026 • Direct Farmer-to-Buyer Marketplace • Multilingual & Voice Enabled
+          🌾 {t("footerText")}
         </div>
       </footer>
     </div>

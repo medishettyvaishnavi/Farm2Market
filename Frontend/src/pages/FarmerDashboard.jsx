@@ -4,6 +4,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useFarmerData } from "../context/FarmerDataContext";
 import FarmerLayout from "../components/layout/FarmerLayout";
 import VoiceButton from "../components/common/VoiceButton";
+import { formatNumberForSpeech } from "../services/voiceService";
 import { liveMandiRates } from "../data/mandiPrices";
 import {
   FaStore,
@@ -22,7 +23,7 @@ import {
 
 export default function FarmerDashboard() {
   const { farmer } = useAuth();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { crops, offers, orders } = useFarmerData();
   const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ export default function FarmerDashboard() {
     .filter((o) => o.status === "paid")
     .reduce((acc, curr) => acc + curr.totalAmount, 0);
 
-  const voiceSummaryText = `Welcome ${farmer?.name}. You have ${activeCropsCount} active crops listed, ${pendingOffersCount} pending buyer offers, and total earnings of ₹${totalRevenue.toLocaleString()}. Today's Mandi rate for Cotton is ₹7,550 per quintal.`;
+  const voiceSummaryText = `${t("welcome")}, ${farmer?.name}. ${t("activeCrops")}: ${formatNumberForSpeech(activeCropsCount, language)}. ${t("pendingOffers")}: ${formatNumberForSpeech(pendingOffersCount, language)}. ${t("totalEarnings")}: ${formatNumberForSpeech(totalRevenue, language)}. ${t("todayMandiRate")}: ${formatNumberForSpeech(7550, language)}.`;
 
   return (
     <FarmerLayout>
@@ -78,7 +79,7 @@ export default function FarmerDashboard() {
         <div className="card shadow-sm border-0 rounded-4 p-3 mb-4 bg-white">
           <div className="d-flex align-items-center justify-content-between mb-2">
             <span className="fw-bold text-success small d-flex align-items-center gap-1">
-              <FaChartLine /> {t("mandiTicker")} (లైవ్ మార్కెట్ ధరలు)
+              <FaChartLine /> Market Prices (మార్కెట్ ధరలు)
             </span>
             <Link to="/farmer/markets" className="small text-decoration-none text-success fw-bold">
               {t("viewAll")} →
@@ -109,7 +110,7 @@ export default function FarmerDashboard() {
                   ₹{rate.modalPrice.toLocaleString()} <span className="small text-muted fw-normal">/{rate.unit}</span>
                 </div>
                 <div className="small text-muted text-truncate" style={{ fontSize: "0.75rem" }}>
-                  {rate.mandi}
+                  {rate.market}
                 </div>
               </div>
             ))}

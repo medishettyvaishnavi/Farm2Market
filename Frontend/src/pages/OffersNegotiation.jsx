@@ -77,7 +77,7 @@ export default function OffersNegotiation() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak="You can view incoming buyer bids here. Accept to lock the deal, or send a counter offer with your preferred price."
+            textToSpeak={t("incomingOffers")}
           />
         </div>
 

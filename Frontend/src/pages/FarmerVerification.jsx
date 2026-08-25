@@ -58,7 +58,7 @@ export default function FarmerVerification() {
           </div>
           <VoiceButton
             mode="speak"
-            textToSpeak="Farmer verification gives you verified badge, instant buyer trust, and direct payments into your bank account."
+            textToSpeak={t("idVerification")}
           />
         </div>
 

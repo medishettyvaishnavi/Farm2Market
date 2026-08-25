@@ -4,25 +4,22 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
 import { useNetwork } from "../../context/NetworkContext";
 import LanguageSelector from "../common/LanguageSelector";
-import VoiceButton from "../common/VoiceButton";
 import {
-  FaLeaf,
-  FaPlusCircle,
-  FaStore,
+  FaSearch,
   FaHandshake,
   FaHistory,
   FaUserCircle,
   FaCheckCircle,
   FaWifi,
   FaSignOutAlt,
-  FaShieldAlt,
   FaTimes,
-  FaTachometerAlt,
+  FaStore,
+  FaChartLine,
 } from "react-icons/fa";
 
-export default function FarmerNavbar() {
+export default function BuyerNavbar() {
   const { t } = useLanguage();
-  const { farmer, logout } = useAuth();
+  const { farmer: user, logout } = useAuth();
   const { isOnline, toggleSimulatedOffline } = useNetwork();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,7 +29,6 @@ export default function FarmerNavbar() {
   const profileMenuRef = useRef(null);
   const sidebarRef = useRef(null);
 
-  // Close profile menu on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
@@ -43,14 +39,13 @@ export default function FarmerNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close sidebar on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
         sidebarOpen &&
         sidebarRef.current &&
         !sidebarRef.current.contains(e.target) &&
-        !e.target.closest(".hamburger-btn")
+        !e.target.closest(".buyer-hamburger-btn")
       ) {
         setSidebarOpen(false);
       }
@@ -59,19 +54,17 @@ export default function FarmerNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [sidebarOpen]);
 
-  // Lock body scroll when sidebar is open
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [sidebarOpen]);
 
   const navLinks = [
-    { path: "/farmer/dashboard", label: t("dashboard"), icon: FaTachometerAlt },
-    { path: "/farmer/crops", label: t("myCrops"), icon: FaStore },
-    { path: "/farmer/markets", label: t("markets"), icon: FaLeaf },
-    { path: "/farmer/buyers", label: t("buyers"), icon: FaHandshake },
-    { path: "/farmer/offers", label: t("offers"), icon: FaHandshake },
-    { path: "/farmer/orders", label: t("orders"), icon: FaHistory },
+    { path: "/buyer/dashboard", label: "Dashboard", icon: FaStore },
+    { path: "/buyer/search", label: "Search Crops", icon: FaSearch },
+    { path: "/buyer/my-orders", label: "My Orders", icon: FaHistory },
+    { path: "/buyer/market-rates", label: "Market Rates", icon: FaChartLine },
+    { path: "/buyer/negotiations", label: "Negotiations", icon: FaHandshake },
   ];
 
   const closeSidebar = () => setSidebarOpen(false);
@@ -81,7 +74,7 @@ export default function FarmerNavbar() {
       {/* ── Top Bar ── */}
       <nav
         style={{
-          background: "linear-gradient(135deg, #1b6e2e 0%, #2d9e4f 100%)",
+          background: "linear-gradient(135deg, #1565c0 0%, #1e88e5 100%)",
           boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
           position: "sticky",
           top: 0,
@@ -92,9 +85,8 @@ export default function FarmerNavbar() {
         <div className="d-flex align-items-center justify-content-between">
           {/* Left: Hamburger + Brand */}
           <div className="d-flex align-items-center gap-3">
-            {/* Hamburger Button */}
             <button
-              className="hamburger-btn"
+              className="buyer-hamburger-btn"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open navigation menu"
               style={{
@@ -116,64 +108,47 @@ export default function FarmerNavbar() {
               <span style={{ display: "block", width: "22px", height: "2.5px", background: "#fff", borderRadius: "2px" }} />
             </button>
 
-            {/* Brand */}
-            <Link
-              to="/farmer/dashboard"
-              className="text-decoration-none d-flex align-items-center gap-2"
-              style={{ color: "#fff" }}
-            >
-              <span
-                style={{
-                  background: "#fff",
-                  borderRadius: "50%",
-                  width: "34px",
-                  height: "34px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.1rem",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
-                }}
-              >
-                🌾
+            <Link to="/buyer/dashboard" className="text-decoration-none d-flex align-items-center gap-2" style={{ color: "#fff" }}>
+              <span style={{
+                background: "#fff",
+                borderRadius: "50%",
+                width: "34px",
+                height: "34px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.1rem",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
+              }}>
+                🛒
               </span>
               <span style={{ fontWeight: 700, fontSize: "1.15rem", letterSpacing: "0.3px" }}>
-                {t("appName")}
+                {t("appName")} <span style={{ fontSize: "0.75rem", fontWeight: 400, opacity: 0.85 }}>Buyer</span>
               </span>
             </Link>
           </div>
 
-          {/* Right: Utility Actions */}
+          {/* Right: Search shortcut + Utilities */}
           <div className="d-flex align-items-center gap-2">
-            {/* Add Crop */}
             <Link
-              to="/farmer/add-crop"
+              to="/buyer/search"
               className="d-flex align-items-center gap-1 fw-bold text-dark text-decoration-none"
               style={{
-                background: "#ffc107",
+                background: "#fff",
                 borderRadius: "20px",
                 padding: "6px 14px",
                 fontSize: "0.82rem",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
                 whiteSpace: "nowrap",
+                color: "#1565c0",
               }}
             >
-              <FaPlusCircle />
-              <span className="d-none d-sm-inline">{t("addCrop")}</span>
+              <FaSearch />
+              <span className="d-none d-sm-inline">Search Crops</span>
             </Link>
 
-            {/* Voice */}
-            <VoiceButton
-              mode="listen"
-              onTranscript={(text) => {
-                navigate(`/farmer/crops?search=${encodeURIComponent(text)}`);
-              }}
-            />
-
-            {/* Language */}
             <LanguageSelector variant="dropdown" />
 
-            {/* Network Toggle */}
             <button
               type="button"
               className={`btn btn-sm rounded-pill px-2 py-1 d-none d-md-flex align-items-center gap-1 ${
@@ -187,7 +162,6 @@ export default function FarmerNavbar() {
               <span>{isOnline ? "Online" : "Offline"}</span>
             </button>
 
-            {/* Profile */}
             <div className="position-relative" ref={profileMenuRef}>
               <button
                 className="btn btn-light btn-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm fw-bold text-dark"
@@ -195,48 +169,29 @@ export default function FarmerNavbar() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 aria-label="Profile Menu"
               >
-                <FaUserCircle className="text-success fs-5" />
+                <FaUserCircle className="text-primary fs-5" />
                 <span className="d-none d-md-inline text-truncate" style={{ maxWidth: "110px" }}>
-                  {farmer?.name?.split(" ")[0] || "Farmer"}
+                  {user?.name?.split(" ")[0] || "Buyer"}
                 </span>
-                {farmer?.isVerified && (
-                  <FaCheckCircle className="text-primary small" title="Verified Farmer" />
-                )}
               </button>
 
               {showProfileMenu && (
                 <div
                   className="position-absolute end-0 mt-2 card shadow-lg p-2 border-0"
-                  style={{
-                    zIndex: 1050,
-                    width: "210px",
-                    borderRadius: "14px",
-                    background: "#ffffff",
-                  }}
+                  style={{ zIndex: 1050, width: "210px", borderRadius: "14px", background: "#ffffff" }}
                 >
                   <div className="px-3 py-2 border-bottom mb-1">
-                    <div className="fw-bold text-dark text-truncate">{farmer?.name || "Farmer"}</div>
-                    <div className="small text-muted">{farmer?.village || "Telangana"}</div>
+                    <div className="fw-bold text-dark text-truncate">{user?.name || "Buyer"}</div>
+                    <div className="small text-muted">{user?.village || "Buyer Account"}</div>
                   </div>
-
                   <Link
                     className="dropdown-item py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 text-dark"
-                    to="/farmer/profile"
+                    to="/buyer/profile"
                     onClick={() => setShowProfileMenu(false)}
                   >
-                    <FaUserCircle className="text-success" /> {t("profile")}
+                    <FaUserCircle className="text-primary" /> Profile
                   </Link>
-
-                  <Link
-                    className="dropdown-item py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 text-dark"
-                    to="/farmer/verification"
-                    onClick={() => setShowProfileMenu(false)}
-                  >
-                    <FaShieldAlt className="text-primary" /> {t("verification")}
-                  </Link>
-
                   <hr className="my-1" />
-
                   <button
                     type="button"
                     className="dropdown-item text-danger py-2 px-3 fw-semibold rounded d-flex align-items-center gap-2 border-0 bg-transparent w-100 text-start"
@@ -270,7 +225,7 @@ export default function FarmerNavbar() {
         }}
       />
 
-      {/* ── Sidebar / Navigation Drawer ── */}
+      {/* ── Sidebar ── */}
       <aside
         ref={sidebarRef}
         style={{
@@ -279,7 +234,7 @@ export default function FarmerNavbar() {
           left: 0,
           height: "100vh",
           width: "280px",
-          background: "linear-gradient(180deg, #1b6e2e 0%, #145222 100%)",
+          background: "linear-gradient(180deg, #1565c0 0%, #0d3b80 100%)",
           zIndex: 1050,
           transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -288,43 +243,31 @@ export default function FarmerNavbar() {
           boxShadow: sidebarOpen ? "4px 0 32px rgba(0,0,0,0.35)" : "none",
         }}
       >
-        {/* Sidebar Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "1.2rem 1.2rem 1rem",
-            borderBottom: "1px solid rgba(255,255,255,0.12)",
-          }}
-        >
+        {/* Header */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "1.2rem 1.2rem 1rem",
+          borderBottom: "1px solid rgba(255,255,255,0.12)",
+        }}>
           <div className="d-flex align-items-center gap-2">
-            <span
-              style={{
-                background: "#fff",
-                borderRadius: "50%",
-                width: "38px",
-                height: "38px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.3rem",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              🌾
-            </span>
+            <span style={{
+              background: "#fff",
+              borderRadius: "50%",
+              width: "38px",
+              height: "38px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.3rem",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            }}>🛒</span>
             <div>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", lineHeight: 1.2 }}>
-                {t("appName")}
-              </div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.72rem" }}>
-                {farmer?.name || "Farmer"}
-              </div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", lineHeight: 1.2 }}>Buyer Portal</div>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.72rem" }}>{user?.name || "Buyer"}</div>
             </div>
           </div>
-
-          {/* Close Button */}
           <button
             onClick={closeSidebar}
             aria-label="Close menu"
@@ -369,20 +312,13 @@ export default function FarmerNavbar() {
                       textDecoration: "none",
                       fontWeight: 600,
                       fontSize: "0.92rem",
-                      letterSpacing: "0.2px",
-                      background: isActive
-                        ? "rgba(255,255,255,0.18)"
-                        : "transparent",
+                      background: isActive ? "rgba(255,255,255,0.18)" : "transparent",
                       color: isActive ? "#fff" : "rgba(255,255,255,0.78)",
-                      borderLeft: isActive ? "3px solid #ffc107" : "3px solid transparent",
+                      borderLeft: isActive ? "3px solid #64b5f6" : "3px solid transparent",
                       transition: "background 0.2s, color 0.2s",
                     }}
-                    onMouseEnter={e => {
-                      if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) e.currentTarget.style.background = "transparent";
-                    }}
+                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                   >
                     <Icon style={{ fontSize: "1.05rem", flexShrink: 0 }} />
                     <span>{item.label}</span>
@@ -391,48 +327,18 @@ export default function FarmerNavbar() {
               );
             })}
           </ul>
-
-          {/* Divider */}
-          <div style={{ height: "1px", background: "rgba(255,255,255,0.1)", margin: "12px 4px" }} />
-
-          {/* Quick Actions inside sidebar */}
-          <Link
-            to="/farmer/add-crop"
-            onClick={closeSidebar}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "11px 14px",
-              borderRadius: "12px",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: "0.92rem",
-              background: "#ffc107",
-              color: "#1b3a0e",
-              transition: "filter 0.2s",
-              margin: "0 0 4px",
-            }}
-            onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.1)"}
-            onMouseLeave={e => e.currentTarget.style.filter = "brightness(1)"}
-          >
-            <FaPlusCircle style={{ fontSize: "1.05rem" }} />
-            <span>{t("addCrop")}</span>
-          </Link>
         </nav>
 
-        {/* Sidebar Footer: Profile + Logout */}
-        <div
-          style={{
-            borderTop: "1px solid rgba(255,255,255,0.12)",
-            padding: "1rem 0.8rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-          }}
-        >
+        {/* Footer */}
+        <div style={{
+          borderTop: "1px solid rgba(255,255,255,0.12)",
+          padding: "1rem 0.8rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}>
           <Link
-            to="/farmer/profile"
+            to="/buyer/profile"
             onClick={closeSidebar}
             style={{
               display: "flex",
@@ -450,9 +356,9 @@ export default function FarmerNavbar() {
             onMouseLeave={e => e.currentTarget.style.background = "transparent"}
           >
             <FaUserCircle style={{ fontSize: "1.1rem" }} />
-            <span>{t("profile")}</span>
-            {farmer?.isVerified && (
-              <FaCheckCircle style={{ fontSize: "0.75rem", color: "#4fc3f7", marginLeft: "auto" }} title="Verified" />
+            <span>Profile</span>
+            {user?.isVerified && (
+              <FaCheckCircle style={{ fontSize: "0.75rem", color: "#90caf9", marginLeft: "auto" }} />
             )}
           </Link>
 
