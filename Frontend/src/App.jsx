@@ -13,6 +13,10 @@ import NearbyBuyers from "./pages/NearbyBuyers";
 import OffersNegotiation from "./pages/OffersNegotiation";
 import OrderHistory from "./pages/OrderHistory";
 
+import BuyerLogin from "./pages/BuyerLogin";
+import BuyerRegister from "./pages/BuyerRegister";
+import BuyerMarketplace from "./pages/BuyerMarketplace";
+
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +27,12 @@ function App() {
         {/* Auth Routes */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
         <Route path="/farmer/register" element={<FarmerRegister />} />
+
+        <Route path="/buyer/login" element={<BuyerLogin />} />
+        <Route path="/buyer/register" element={<BuyerRegister />} />
+        <Route path="/buyer/marketplace" element={<BuyerMarketplace />} />
+
+        {/* Aliases for convenience */}
         <Route path="/login" element={<Navigate to="/farmer/login" replace />} />
         <Route path="/register" element={<Navigate to="/farmer/register" replace />} />
 

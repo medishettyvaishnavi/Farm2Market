@@ -91,7 +91,7 @@ function Home() {
             <div className="col-md-6">
               <div
                 className="card shadow-sm border-0 rounded-4 p-4 text-start h-100 bg-white hover-lift cursor-pointer border-top border-4 border-primary"
-                onClick={() => navigate("/farmer/login")}
+                onClick={() => navigate("/buyer/login")}
               >
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <div
