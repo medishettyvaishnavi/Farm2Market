@@ -11,9 +11,9 @@ function FarmerLogin() {
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log("Login Data:", data);
-        // Handle authentication logic or API call here
-    };
+    	console.log("Login Data:", data);
+    	navigate("/farmer/dashboard");
+    };     
 
     return (
         <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
