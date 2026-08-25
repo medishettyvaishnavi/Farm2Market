@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { initialFarmerProfile } from "../data/mockFarmerData";
 import { loadStoredData, saveStoredData, STORAGE_KEYS } from "../services/storageService";
+import api from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -20,36 +21,151 @@ export const AuthProvider = ({ children }) => {
     }
   }, [farmer]);
 
-  const login = ({ name, location, mobile, role = "farmer", password }) => {
-    // In real backend, axios.post('/api/auth/login')
-    const loggedUser = {
-      ...initialFarmerProfile,
-      name: name || initialFarmerProfile.name,
-      village: location || initialFarmerProfile.village,
-      mobile: mobile || initialFarmerProfile.mobile,
-      role: role || "farmer",
-    };
-    setFarmer(loggedUser);
-    setIsAuthenticated(true);
-    saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
-    return { success: true, role: loggedUser.role };
+  const login = async ({ mobile, password, role }) => {
+    try {
+      const res = await api.post("/auth/login", { 
+        mobile, 
+        password,
+        role: role.toUpperCase(),
+      });
+      const { token, user } = res.data;
+      
+      localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
+
+      const loggedUser = {
+        ...initialFarmerProfile,
+        id: user.id || user._id,
+        name: user.name,
+        mobile: user.mobile,
+        role: user.role.toLowerCase(),
+        village: user.location || initialFarmerProfile.village,
+        isVerified: user.isVerified || false,
+        verificationStatus: user.isVerified ? "verified" : "pending",
+        landSize: user.landSize,
+        soilType: user.soilType,
+        irrigationSource: user.irrigationSource,
+      };
+
+      setFarmer(loggedUser);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
+      return { success: true, role: loggedUser.role };
+    } catch (error) {
+      console.warn("API login failed, using local fallback:", error);
+      
+      // Mock Fallback
+      const loggedUser = {
+        ...initialFarmerProfile,
+        name: mobile || initialFarmerProfile.name,
+        village: "Khammam Rural",
+        mobile: mobile || initialFarmerProfile.mobile,
+        role: role.toLowerCase(),
+      };
+      setFarmer(loggedUser);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, loggedUser);
+      return { success: true, role: loggedUser.role };
+    }
   };
 
-  const registerFarmer = (formData) => {
-    const newFarmer = {
-      ...initialFarmerProfile,
-      id: "farmer_" + Date.now(),
-      name: formData.name,
-      mobile: formData.mobile,
-      village: formData.location || formData.village,
-      language: formData.language || "te",
-      verificationStatus: "pending",
-      isVerified: false,
-    };
-    setFarmer(newFarmer);
-    setIsAuthenticated(true);
-    saveStoredData(STORAGE_KEYS.PROFILE, newFarmer);
-    return { success: true };
+  const registerFarmer = async (formData) => {
+    try {
+      const response = await api.post("/auth/signup", {
+        name: formData.name,
+        mobile: formData.mobile,
+        password: formData.password || "123456",
+        role: "FARMER",
+        location: formData.location || formData.village,
+        landSize: Number(formData.landSize) || 0,
+        soilType: formData.soilType || "",
+        irrigationSource: formData.irrigationSource || "",
+        preferredLanguage: formData.preferredLanguage || "en",
+      });
+
+      const { token, user } = response.data;
+      localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
+
+      const newFarmer = {
+        ...initialFarmerProfile,
+        id: user.id || user._id,
+        name: user.name,
+        mobile: user.mobile,
+        village: user.location,
+        role: user.role.toLowerCase(),
+        language: user.preferredLanguage,
+        landSize: user.landSize,
+        soilType: user.soilType,
+        irrigationSource: user.irrigationSource,
+        verificationStatus: "pending",
+        isVerified: false,
+      };
+
+      setFarmer(newFarmer);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, newFarmer);
+
+      return {
+        success: true,
+        user,
+      };
+    } catch (error) {
+      console.warn("API registration failed, using local fallback:", error);
+      
+      const newFarmer = {
+        ...initialFarmerProfile,
+        id: "farmer_" + Date.now(),
+        name: formData.name,
+        mobile: formData.mobile,
+        village: formData.location || formData.village,
+        language: formData.language || "te",
+        verificationStatus: "pending",
+        isVerified: false,
+      };
+      setFarmer(newFarmer);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, newFarmer);
+      return { success: true };
+    }
+  };
+
+  const registerBuyer = async (formData) => {
+    try {
+      const response = await api.post("/auth/signup", {
+        name: formData.name,
+        mobile: formData.mobile,
+        password: formData.password,
+        role: "BUYER",
+        location: formData.location,
+      });
+
+      const { token, user } = response.data;
+      localStorage.setItem("farm2market_token", token);
+      localStorage.setItem("token", token);
+      
+      const newBuyer = {
+        ...initialFarmerProfile,
+        id: user.id || user._id,
+        name: user.name,
+        mobile: user.mobile,
+        village: user.location,
+        role: "buyer",
+        isVerified: true,
+      };
+
+      setFarmer(newBuyer);
+      setIsAuthenticated(true);
+      saveStoredData(STORAGE_KEYS.PROFILE, newBuyer);
+      return { success: true, user };
+    } catch (error) {
+      console.error("Buyer API registration failed, using fallback:", error);
+      return await login({
+        mobile: formData.mobile,
+        password: formData.password,
+        role: "buyer",
+      });
+    }
   };
 
   const updateProfile = (updatedFields) => {
@@ -77,6 +193,8 @@ export const AuthProvider = ({ children }) => {
     setFarmer(null);
     setIsAuthenticated(false);
     localStorage.removeItem(STORAGE_KEYS.PROFILE);
+    localStorage.removeItem("farm2market_token");
+    localStorage.removeItem("token");
   };
 
   return (
@@ -86,6 +204,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         login,
         registerFarmer,
+        registerBuyer,
         updateProfile,
         submitVerification,
         logout,

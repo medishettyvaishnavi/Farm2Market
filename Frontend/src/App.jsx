@@ -13,6 +13,7 @@ import NearbyBuyers from "./pages/NearbyBuyers";
 import OffersNegotiation from "./pages/OffersNegotiation";
 import OrderHistory from "./pages/OrderHistory";
 
+<<<<<<< HEAD
 // Buyer-specific pages
 import BuyerDashboard from "./pages/BuyerDashboard";
 import BuyerCropSearch from "./pages/BuyerCropSearch";
@@ -32,6 +33,14 @@ function RoleRoute({ allowedRole, children }) {
 
   return children;
 }
+=======
+import BuyerLogin from "./pages/BuyerLogin";
+import BuyerRegister from "./pages/BuyerRegister";
+import BuyerMarketplace from "./pages/BuyerMarketplace";
+
+import NgoLogin from "./pages/NgoLogin";
+import NgoDashboard from "./pages/NgoDashboard";
+>>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
 
 function App() {
   return (
@@ -43,6 +52,15 @@ function App() {
         {/* Auth Routes (shared) */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
         <Route path="/farmer/register" element={<FarmerRegister />} />
+
+        <Route path="/buyer/login" element={<BuyerLogin />} />
+        <Route path="/buyer/register" element={<BuyerRegister />} />
+        <Route path="/buyer/marketplace" element={<BuyerMarketplace />} />
+
+        <Route path="/ngo/login" element={<NgoLogin />} />
+        <Route path="/ngo/dashboard" element={<NgoDashboard />} />
+
+        {/* Aliases for convenience */}
         <Route path="/login" element={<Navigate to="/farmer/login" replace />} />
         <Route path="/register" element={<Navigate to="/farmer/register" replace />} />
 

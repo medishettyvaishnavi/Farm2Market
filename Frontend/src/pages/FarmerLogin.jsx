@@ -35,19 +35,26 @@ function FarmerLogin() {
     },
   });
 
-  const onSubmit = (data) => {
-    login({
-      name: data.name,
-      location: data.location,
+  const onSubmit = async (data) => {
+    const result = await login({
       mobile: data.mobile,
-      role: selectedRole,
       password: data.password,
+      role: selectedRole.toUpperCase(),
     });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
 
     if (selectedRole === "farmer") {
       navigate("/farmer/dashboard");
     } else {
+<<<<<<< HEAD
       navigate("/buyer/dashboard");
+=======
+      navigate("/buyer/marketplace");
+>>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
     }
   };
 

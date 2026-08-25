@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import LanguageSelector from "../components/common/LanguageSelector";
 import VoiceButton from "../components/common/VoiceButton";
@@ -91,7 +91,7 @@ function Home() {
             <div className="col-md-6">
               <div
                 className="card shadow-sm border-0 rounded-4 p-4 text-start h-100 bg-white hover-lift cursor-pointer border-top border-4 border-primary"
-                onClick={() => navigate("/farmer/login")}
+                onClick={() => navigate("/buyer/login")}
               >
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <div
@@ -154,7 +154,11 @@ function Home() {
       {/* Footer */}
       <footer className="bg-white border-top py-3 text-center text-muted small">
         <div className="container">
+<<<<<<< HEAD
           🌾 {t("footerText")}
+=======
+          🌾 Farm2Market © 2026 • Direct Farmer-to-Buyer Marketplace • Multilingual & Voice Enabled • <Link to="/ngo/login" className="text-decoration-none text-success fw-bold">NGO Partner Portal</Link>
+>>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
         </div>
       </footer>
     </div>

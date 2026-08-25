@@ -31,8 +31,24 @@ function FarmerRegister() {
 
   const password = watch("password");
 
-  const onSubmit = (data) => {
-    registerFarmer(data);
+  const onSubmit = async (data) => {
+    const result = await registerFarmer({
+      name: data.name,
+      mobile: data.mobile,
+      password: data.password,
+      role: "FARMER",
+      location: data.location,
+      landSize: Number(data.landSize),
+      soilType: data.soilType,
+      irrigationSource: data.irrigationType,
+      preferredLanguage: data.language,
+    });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
     navigate("/farmer/dashboard");
   };
 
