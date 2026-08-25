@@ -17,6 +17,9 @@ import BuyerLogin from "./pages/BuyerLogin";
 import BuyerRegister from "./pages/BuyerRegister";
 import BuyerMarketplace from "./pages/BuyerMarketplace";
 
+import NgoLogin from "./pages/NgoLogin";
+import NgoDashboard from "./pages/NgoDashboard";
+
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +34,9 @@ function App() {
         <Route path="/buyer/login" element={<BuyerLogin />} />
         <Route path="/buyer/register" element={<BuyerRegister />} />
         <Route path="/buyer/marketplace" element={<BuyerMarketplace />} />
+
+        <Route path="/ngo/login" element={<NgoLogin />} />
+        <Route path="/ngo/dashboard" element={<NgoDashboard />} />
 
         {/* Aliases for convenience */}
         <Route path="/login" element={<Navigate to="/farmer/login" replace />} />

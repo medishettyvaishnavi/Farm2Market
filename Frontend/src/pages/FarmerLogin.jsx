@@ -35,10 +35,8 @@ function FarmerLogin() {
     },
   });
 
-  const onSubmit = (data) => {
-    login({
-      name: data.name,
-      location: data.location,
+  const onSubmit = async (data) => {
+    const res = await login({
       mobile: data.mobile,
       role: selectedRole,
       password: data.password,
@@ -47,7 +45,7 @@ function FarmerLogin() {
     if (selectedRole === "farmer") {
       navigate("/farmer/dashboard");
     } else {
-      navigate("/farmer/buyers");
+      navigate("/buyer/marketplace");
     }
   };
 

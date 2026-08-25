@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import LanguageSelector from "../components/common/LanguageSelector";
 import VoiceButton from "../components/common/VoiceButton";
@@ -154,7 +154,7 @@ function Home() {
       {/* Footer */}
       <footer className="bg-white border-top py-3 text-center text-muted small">
         <div className="container">
-          🌾 Farm2Market © 2026 • Direct Farmer-to-Buyer Marketplace • Multilingual & Voice Enabled
+          🌾 Farm2Market © 2026 • Direct Farmer-to-Buyer Marketplace • Multilingual & Voice Enabled • <Link to="/ngo/login" className="text-decoration-none text-success fw-bold">NGO Partner Portal</Link>
         </div>
       </footer>
     </div>
