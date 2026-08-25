@@ -4,11 +4,17 @@ import { initialFarmerProfile } from "../data/mockFarmerData";
 import { loadStoredData, saveStoredData, STORAGE_KEYS } from "../services/storageService";
 import api from "../services/api";
 
+const getValidProfileName = (profile) => {
+  const name = String(profile?.name || "").trim();
+  return name && !/^\+?[\d\s-]+$/.test(name) ? name : initialFarmerProfile.name;
+};
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [farmer, setFarmer] = useState(() => {
-    return loadStoredData(STORAGE_KEYS.PROFILE, initialFarmerProfile);
+    const storedProfile = loadStoredData(STORAGE_KEYS.PROFILE, initialFarmerProfile);
+    return { ...storedProfile, name: getValidProfileName(storedProfile) };
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -21,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [farmer]);
 
-  const login = async ({ mobile, password, role }) => {
+  const login = async ({ name, mobile, password, role }) => {
     try {
       const res = await api.post("/auth/login", { 
         mobile, 
@@ -36,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       const loggedUser = {
         ...initialFarmerProfile,
         id: user.id || user._id,
-        name: user.name,
+        name: getValidProfileName({ name: user.name || name }),
         mobile: user.mobile,
         role: user.role.toLowerCase(),
         village: user.location || initialFarmerProfile.village,
@@ -57,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       // Mock Fallback
       const loggedUser = {
         ...initialFarmerProfile,
-        name: mobile || initialFarmerProfile.name,
+        name: name || (farmer?.mobile === mobile ? getValidProfileName(farmer) : initialFarmerProfile.name),
         village: "Khammam Rural",
         mobile: mobile || initialFarmerProfile.mobile,
         role: role.toLowerCase(),

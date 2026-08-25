@@ -154,11 +154,7 @@ function Home() {
       {/* Footer */}
       <footer className="bg-white border-top py-3 text-center text-muted small">
         <div className="container">
-<<<<<<< HEAD
-          🌾 {t("footerText")}
-=======
-          🌾 Farm2Market © 2026 • Direct Farmer-to-Buyer Marketplace • Multilingual & Voice Enabled • <Link to="/ngo/login" className="text-decoration-none text-success fw-bold">NGO Partner Portal</Link>
->>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
+          🌾 {t("footerText")} • <Link to="/ngo/login" className="text-decoration-none text-success fw-bold">NGO Partner Portal</Link>
         </div>
       </footer>
     </div>

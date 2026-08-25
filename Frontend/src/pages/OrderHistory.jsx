@@ -3,7 +3,6 @@ import { useLanguage } from "../context/LanguageContext";
 import { useFarmerData } from "../context/FarmerDataContext";
 import FarmerLayout from "../components/layout/FarmerLayout";
 import VoiceButton from "../components/common/VoiceButton";
-import { formatNumberForSpeech } from "../services/voiceService";
 import {
   FaHistory,
   FaCheckCircle,
@@ -19,11 +18,7 @@ import {
 } from "react-icons/fa";
 
 export default function OrderHistory() {
-<<<<<<< HEAD
-  const { language, t } = useLanguage();
-=======
-  const { t, language } = useLanguage();
->>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
+  const { t } = useLanguage();
   const { orders } = useFarmerData();
   
   const [activeSubTab, setActiveSubTab] = useState("track"); // 'track' | 'earnings' | 'history'
@@ -130,15 +125,11 @@ export default function OrderHistory() {
           </div>
           <VoiceButton
             mode="speak"
-<<<<<<< HEAD
-            textToSpeak={`${t("orderTracker")}: ${formatNumberForSpeech(orders.length, language)}. ${t("totalEarnings")}: ${formatNumberForSpeech(totalEarnings, language)}.`}
-=======
             textToSpeak={
               activeSubTab === "earnings"
                 ? `Your total earnings are ₹${totalActualEarnings.toLocaleString()}, and this month you earned ₹${monthlyEarnings.toLocaleString()}.`
                 : `You have ${orders.length} orders. Use the tabs to track delivery or view transactions.`
             }
->>>>>>> 577a2fe4bc2923cba0c555734d7c2a8b7be2d2a0
           />
         </div>
 
