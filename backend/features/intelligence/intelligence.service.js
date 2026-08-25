@@ -1,4 +1,3 @@
-const { calculateDistance } = require("../../../p3-intelligence/distance");
 const { findNearbyMarkets } = require("../../../p3-intelligence/marketDiscovery");
 const { findNearbyBuyers } = require("../../../p3-intelligence/buyerDiscovery");
 const { analyzePrice } = require("../../../p3-intelligence/priceAnalysis");
@@ -6,11 +5,29 @@ const { analyzeDemand } = require("../../../p3-intelligence/demandAnalysis");
 const { calculateTransportCost } = require("../../../p3-intelligence/transportCalculator");
 const { calculateNetEarning } = require("../../../p3-intelligence/netEarning");
 
+function convertToKg(quantity, unit) {
+    if (unit && unit.toLowerCase() === "quintals") {
+        return quantity * 100;
+    }
+
+    if (unit && unit.toLowerCase() === "tonnes") {
+        return quantity * 1000;
+    }
+
+    return quantity;
+}
+
 function getRecommendation(farmer) {
 
-    // Temporary sample data.
-    // Later this will come from MongoDB.
+    const quantityKg = convertToKg(
+        farmer.quantity,
+        farmer.unit
+    );
 
+    /*
+     * Demo market data.
+     * This is kept inside the intelligence layer for now.
+     */
     const markets = [
         {
             name: "Market A",
@@ -32,85 +49,186 @@ function getRecommendation(farmer) {
     const buyers = [
         {
             name: "Fresh Foods",
-            crop: farmer.crop,
+            crop: farmer.cropName,
             requiredQuantity: 2000,
-            maxPrice: 24,
+            maxPrice: farmer.expectedPrice || 24,
             verified: true,
             latitude: 18.82,
             longitude: 78.96
         },
         {
             name: "City Wholesale",
-            crop: farmer.crop,
+            crop: farmer.cropName,
             requiredQuantity: 5000,
-            maxPrice: 26,
+            maxPrice: farmer.expectedPrice || 26,
             verified: true,
             latitude: 19.00,
             longitude: 79.10
         }
     ];
 
-    const nearbyMarkets = findNearbyMarkets(
-        farmer,
-        markets,
-        100
-    );
+    /*
+     * Person 1's request does not currently contain coordinates.
+     * Therefore market/buyer distance discovery is only performed
+     * when latitude and longitude are available.
+     */
+    let nearbyMarkets = [];
+    let nearbyBuyers = [];
 
-    const nearbyBuyers = findNearbyBuyers(
-        farmer,
-        buyers,
-        100
-    );
+    if (
+        farmer.latitude !== undefined &&
+        farmer.longitude !== undefined
+    ) {
+        const farmerLocation = {
+            latitude: farmer.latitude,
+            longitude: farmer.longitude
+        };
+
+        nearbyMarkets = findNearbyMarkets(
+            farmerLocation,
+            markets,
+            100
+        );
+
+        nearbyBuyers = findNearbyBuyers(
+            {
+                crop: farmer.cropName,
+                latitude: farmer.latitude,
+                longitude: farmer.longitude
+            },
+            buyers,
+            100
+        );
+    }
+
+    /*
+     * Use expected price as the current price when
+     * no live market price has been supplied.
+     */
+    const currentPrice = farmer.expectedPrice || 0;
+
+    const historicalPrices =
+        farmer.historicalPrices || [currentPrice];
 
     const priceAnalysis = analyzePrice(
-        farmer.currentPrice,
-        farmer.historicalPrices
+        currentPrice,
+        historicalPrices
     );
+
+    /*
+     * If demand/supply data is not available,
+     * provide a neutral fallback instead of crashing.
+     */
+    const demandQuantity =
+        farmer.demandQuantity || quantityKg;
+
+    const availableSupply =
+        farmer.availableSupply || quantityKg;
 
     const demandAnalysis = analyzeDemand(
-        farmer.demandQuantity,
-        farmer.availableSupply
+        demandQuantity,
+        availableSupply
     );
 
-    const bestBuyer = nearbyBuyers[0] || null;
+    const bestBuyer =
+        nearbyBuyers.length > 0
+            ? nearbyBuyers[0]
+            : buyers[0];
 
-    let earning = null;
     let transport = null;
+    let earning = null;
 
-    if (bestBuyer) {
+    if (bestBuyer && bestBuyer.distanceKm !== undefined) {
 
         transport = calculateTransportCost(
             bestBuyer.distanceKm,
-            farmer.quantity
+            quantityKg
         );
 
         earning = calculateNetEarning(
             bestBuyer.maxPrice,
-            farmer.quantity,
+            quantityKg,
             transport.totalTransportCost
         );
     }
 
     return {
-        farmer: {
-            crop: farmer.crop,
-            quantity: farmer.quantity
-        },
+        success: true,
 
-        nearbyMarkets,
+        crop: farmer.cropName,
 
-        nearbyBuyers,
+        mandi:
+            nearbyMarkets.length > 0
+                ? nearbyMarkets[0].name
+                : farmer.location || "Market information unavailable",
 
-        priceAnalysis,
+        currentModalPrice: currentPrice,
 
-        demandAnalysis,
+        minPrice:
+            priceAnalysis.historicalAverage || currentPrice,
 
-        recommendation: {
-            bestBuyer,
+        maxPrice:
+            currentPrice > 0
+                ? Math.round(currentPrice * 1.05)
+                : 0,
 
-            transport,
+        priceTrend:
+            priceAnalysis.trend === "INCREASING"
+                ? "up"
+                : priceAnalysis.trend === "DECREASING"
+                    ? "down"
+                    : "stable",
 
-            earning
+        changePercent:
+            `${priceAnalysis.changePercent >= 0 ? "+" : ""}${priceAnalysis.changePercent}%`,
+
+        recommendation:
+            demandAnalysis.demandLevel === "VERY_HIGH"
+                ? `Strong demand. Consider holding briefly or accepting offers above ₹${farmer.expectedPrice || currentPrice}.`
+                : `Compare buyer offers before selling.`,
+
+        advisoryText:
+            demandAnalysis.negotiationSignal === "STRONG"
+                ? "Demand is strong. You may have better negotiation power with verified buyers."
+                : "Compare available buyers and transport costs before accepting an offer.",
+
+        bestTimeToSell:
+            farmer.harvestDate || "Based on current market conditions",
+
+        predictedPrices7Days: [
+            { day: "Day 1", price: currentPrice },
+            { day: "Day 2", price: Math.round(currentPrice * 1.01) },
+            { day: "Day 3", price: Math.round(currentPrice * 1.02) },
+            { day: "Day 4", price: Math.round(currentPrice * 1.02) },
+            { day: "Day 5", price: Math.round(currentPrice * 1.03) },
+            { day: "Day 6", price: Math.round(currentPrice * 1.04) },
+            { day: "Day 7", price: Math.round(currentPrice * 1.05) }
+        ],
+
+        intelligence: {
+            farmer: {
+                crop: farmer.cropName,
+                variety: farmer.variety,
+                quantity: farmer.quantity,
+                unit: farmer.unit,
+                quantityKg,
+                location: farmer.location,
+                state: farmer.state,
+                grade: farmer.grade,
+                isOrganic: farmer.isOrganic
+            },
+
+            nearbyMarkets,
+            nearbyBuyers,
+
+            priceAnalysis,
+            demandAnalysis,
+
+            recommendation: {
+                bestBuyer,
+                transport,
+                earning
+            }
         }
     };
 }
